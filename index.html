@@ -12,7 +12,7 @@
     <body>
 
         <div style="align-items: center;padding-top: 40;" class="container">
-                    <div style="font-size: 30;" class="row row-cols-2">
+                <div style="font-size: 30;" class="row row-cols-2">
                         <div class="col">
                                 <label for="customRange3">Altura Torre 1:  <h3 id="valueTorre1"></h3></label>
                                 <input type="range" name="rangeInput" class="custom-range" min="0" max="600" step="10" id="customRange1" onchange="updateTextInput1(this.value);">
@@ -47,14 +47,15 @@
                         </div>
                         <div class="col">
                                 <label for="customRange3">Frequência de Operação: </label>
-                                <input id="frequenciaOperacao" class="form-control" type="text" placeholder="[MHz]" >                        </div>
+                                <input id="frequenciaOperacao" class="form-control" type="text" placeholder="[MHz]" >                       
                         </div>
+                </div>
                    
                             <button style="padding: 10;margin-top: 20;" onclick="gerarGrafico();" class="btn btn-primary" return false;>Gerar Gráfico</button>
                      
                 
             
-          </div>
+        </div>
         
         
         <div style="font-size: 20;margin: 20;padding: 50;" class="row row-cols-3">

@@ -14,14 +14,16 @@ function createDataSet (torre1, torre2, frequencia, distancia){
         for(let i = 0; i <= 100; i++)
         {
             x = (distancia / 100) * (i+1);
-            
+            x = x.toFixed(2)
             d1 = x;
             d2 = distancia - x;
 
-            y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + torre1; 
-           
+            y = parseFloat(550) * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(torre1); 
+            y = y.toFixed(2)
             P1x[i] = x
             P1y[i] = y
+
+            
 
             y = (y * -1) + (torre1 * 2);
 
@@ -38,9 +40,11 @@ function createDataSet (torre1, torre2, frequencia, distancia){
             d1 = x;
             d2 = distancia - x;
 
-            altura = ((((torre1-torre2) * d2) / distancia) + torre2);
+            altura = ((((torre1-torre2) * d2) / parseFloat(distancia)) + parseFloat(torre2));
 
-            y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(altura); 
+            alert(altura)
+
+            y = parseFloat(550) * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(altura); 
             y = y.toFixed(2)
            
             P1x[i] = x
@@ -54,7 +58,7 @@ function createDataSet (torre1, torre2, frequencia, distancia){
 }
 
 pontos = [P1x,P1y,P2x,P2y]
-alert(P1y)
+
 return pontos
 }
 
@@ -113,6 +117,8 @@ function gerarGrafico(){
     ganhoAntenaRX = document.getElementById("ganhoAntenaRX").value
     distanciaRadioEnlace = document.getElementById("distanciaRadioEnlace").value
     frequenciaOperacao = document.getElementById("frequenciaOperacao").value
+    
+    
 
     var pEirp = calculaPotenciaEfetivamenteIrradiadaPeirp(
         potenciaTransmissor,ganhoAntenaTX,atenuacaoConector,torre1, atenuacaoCabo)
@@ -121,15 +127,15 @@ function gerarGrafico(){
     var potenciaRecebida = calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, torre2, atenuacaoCabo)
     
     printResultados(potenciaRecebida, raio, pEirp);
-
+    
                 
-    pontos = createDataSet(torre1, torre2, raio, frequenciaOperacao, distanciaRadioEnlace);
+    pontos = createDataSet(torre1, torre2, frequenciaOperacao, distanciaRadioEnlace);
 
         
 //Plota Gráfico
     var ctx = document.getElementsByClassName("line-chart")
-
-            let chart = new Chart(ctx, {
+            let chart = []
+            chart = new Chart(ctx, {
         type: 'line',
         data: {
                 datasets: [{
