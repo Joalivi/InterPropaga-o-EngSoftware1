@@ -1,48 +1,61 @@
-function createDataSet (torre1, torre2, raio, frequencia, distancia){
+function createDataSet (torre1, torre2, frequencia, distancia){
 
-
+   
+   
+    var x, y, d1, d2 = 0;
+    var altura = 0;
+    var P1x = []
+    var P1y = []
+    var P2x = []
+    var P2y = []
     
-    var x, y, d1, d2 = 0.0;
-                var altura = 0.0;
+    if(torre1 == torre2)
+    {
+        for(let i = 0; i <= 100; i++)
+        {
+            x = (distancia / 100) * (i+1);
+            
+            d1 = x;
+            d2 = distancia - x;
 
-                if(torre1 == torre2)
-                {
-                    for(let i = 1; i < 100; i++)
-                    {
-                        x = (distancia / 100) * i;
+            y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + torre1; 
+           
+            P1x[i] = x
+            P1y[i] = y
 
-                        d1 = x;
-                        d2 = distancia - x;
+            y = (y * -1) + (torre1 * 2);
 
-                        y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + torre1; 
+            P2x[i] = x
+            P2y[i] = y
+        }
+    }
+    else
+    {
+        for(let i = 0; i <= 100; i++)
+        {
+            x = (distancia / 100) * (i+1);
+            x = x.toFixed(2)
+            d1 = x;
+            d2 = distancia - x;
 
-                        P1.add(x, y);
+            altura = ((((torre1-torre2) * d2) / distancia) + torre2);
 
-                        y = (y * -1) + (torre1 * 2);
+            y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(altura); 
+            y = y.toFixed(2)
+           
+            P1x[i] = x
+            P1y[i] = y
 
-                        P2.add(x, y);
-                    }
-                }
-                else
-                {
-                    for(let i = 1; i < 100; i++)
-                    {
-                        x = (distancia / 100) * i;
+            y = (y * -1) + (altura * 2);
 
-                        d1 = x;
-                        d2 = distancia - x;
-
-                        altura = ((((torre1-torre2) * d2) / distancia) + torre2);
-
-                        y = 550 * Math.sqrt((d1 * d2)/(distancia * frequencia)) + altura; 
-
-                        P1.add(x, y);
-
-                        y = (y * -1) + (altura * 2);
-
-                        P2.add(x, y);
-                    }
+            P2x[i] = x
+            P2y[i] = y
+        }
 }
+
+pontos = [P1x,P1y,P2x,P2y]
+alert(P1y)
+return pontos
 }
 
 function calculaRaio( distancia, frequencia) {
@@ -83,9 +96,9 @@ document.getElementById('valueTorre2').innerText = val + 'm'
 function printResultados(potenciaRecebida, zonaFresnel, potenciaIrradiada){
 
     
-    document.getElementById("potenciaRecebida").innerText = "Potencia Recebida [dBm]:" + potenciaRecebida
-    document.getElementById("zonaFresnel").innerText = "Raio Zona de Fresnel [m]:" + zonaFresnel
-    document.getElementById("potenciaIrradiada").innerText = "Potencia Irradiada [dBm]:" + potenciaIrradiada
+    document.getElementById("potenciaRecebida").innerHTML = "Potencia Recebida [dBm]:" +'\n'+ potenciaRecebida
+    document.getElementById("zonaFresnel").innerText = "Raio Zona de Fresnel [m]:"  +'\n'+ zonaFresnel
+    document.getElementById("potenciaIrradiada").innerText = "Potencia Irradiada [dBm]:"  +'\n'+ potenciaIrradiada
 }
 
 function gerarGrafico(){
@@ -107,9 +120,37 @@ function gerarGrafico(){
     var raio = calculaRaio(distanciaRadioEnlace, frequenciaOperacao)
     var potenciaRecebida = calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, torre2, atenuacaoCabo)
     
-    
-    
     printResultados(potenciaRecebida, raio, pEirp);
 
-    //createDataSet(torre1, torre2, raio, frequencia, distancia);
+                
+    pontos = createDataSet(torre1, torre2, raio, frequenciaOperacao, distanciaRadioEnlace);
+
+        
+//Plota Gráfico
+    var ctx = document.getElementsByClassName("line-chart")
+
+            let chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+                datasets: [{
+                    label: 'First dataset',
+                    data: pontos[1],
+                    borderWidth: 5,
+                    borderColor: 'black',
+                    backgroundColor: 'transparent'
+                },
+                {
+                    label: 'Second dataset',
+                    data: pontos[3],
+                    borderWidth: 5,
+                    borderColor: 'blue',
+                    backgroundColor: 'transparent'
+                }],
+
+                labels: pontos[0],
+                stepSize: 10
+        },
+        options: {
+        }
+        });
 }
