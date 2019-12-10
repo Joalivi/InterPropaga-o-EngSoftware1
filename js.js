@@ -42,7 +42,6 @@ function createDataSet (torre1, torre2, frequencia, distancia){
 
             altura = ((((torre1-torre2) * d2) / parseFloat(distancia)) + parseFloat(torre2));
 
-            alert(altura)
 
             y = parseFloat(550) * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(altura); 
             y = y.toFixed(2)
@@ -81,8 +80,8 @@ function calculaPotenciaEfetivamenteIrradiadaPeirp (potenciaTransmissorPx, ganho
     return Peirp;
 }
 
-function calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, alturaRx, atenuacaoCabo) {
-    var potenciaRecebida = pEirp - aE - (2 * atenuacaoConector) - (alturaRx * atenuacaoCabo / 100)
+function calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, alturaRx, atenuacaoCabo, ganhoAntenaRX) {
+    var potenciaRecebida = (pEirp - aE - (2 * atenuacaoConector) - (alturaRx * atenuacaoCabo / 100) + parseFloat(ganhoAntenaRX))
 
     return potenciaRecebida;
 }
@@ -124,7 +123,7 @@ function gerarGrafico(){
         potenciaTransmissor,ganhoAntenaTX,atenuacaoConector,torre1, atenuacaoCabo)
     var aE = calculaAe( distanciaRadioEnlace, frequenciaOperacao)    
     var raio = calculaRaio(distanciaRadioEnlace, frequenciaOperacao)
-    var potenciaRecebida = calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, torre2, atenuacaoCabo)
+    var potenciaRecebida = calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, torre2, atenuacaoCabo, ganhoAntenaRX)
     
     printResultados(potenciaRecebida, raio, pEirp);
     
@@ -135,28 +134,30 @@ function gerarGrafico(){
 //Plota Gráfico
     var ctx = document.getElementsByClassName("line-chart")
             let chart = []
+            
             chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-                datasets: [{
-                    label: 'First dataset',
-                    data: pontos[1],
-                    borderWidth: 5,
-                    borderColor: 'black',
-                    backgroundColor: 'transparent'
-                },
-                {
-                    label: 'Second dataset',
-                    data: pontos[3],
-                    borderWidth: 5,
-                    borderColor: 'blue',
-                    backgroundColor: 'transparent'
-                }],
 
-                labels: pontos[0],
-                stepSize: 10
-        },
-        options: {
-        }
-        });
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Fresnel de Cima',
+                        data: pontos[1],
+                        borderWidth: 5,
+                        borderColor: 'black',
+                        backgroundColor: 'transparent'
+                    },
+                    {
+                        label: 'Fresnel de Baixo',
+                        data: pontos[3],
+                        borderWidth: 5,
+                        borderColor: 'blue',
+                        backgroundColor: 'transparent'
+                    }],
+
+                    labels: pontos[0],
+                    stepSize: 10
+                },
+                options: {
+                }
+                });
 }
