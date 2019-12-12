@@ -1,16 +1,27 @@
 function createDataSet (torre1, torre2, frequencia, distancia){
 
-   
-   
+    const topografia= [1700, 1300, 700, 790, 770, 760, 750, 800, 850, 800, 700, 650, 625, 600,600, 600, 650, 700, 800, 850, 800, 100, 0, 0]
+        
+    var obstruido = false;
+    var obstrucao = 0;
+    var porcentagem = 0;
+    var piorObstrucao = 0;
+    
+
+    
+
     var x, y, d1, d2 = 0;
     var altura = 0;
     var P1x = []
     var P1y = []
     var P2x = []
     var P2y = []
-    
+    var P3x = []
+    var P3y = []
+    var P4y = []
     if(torre1 == torre2)
     {
+        alert('entro iguais')
         for(let i = 0; i <= 100; i++)
         {
             x = (distancia / 100) * (i+1);
@@ -24,11 +35,19 @@ function createDataSet (torre1, torre2, frequencia, distancia){
             P1y[i] = y
 
             
-
             y = (y * -1) + (torre1 * 2);
 
             P2x[i] = x
             P2y[i] = y
+
+            if(y < topografia[parseInt(x)]){
+                obstruido = true;
+                if(topografia[parseInt(x)] - y > obstrucao) obstrucao = topografia[parseInt(x)];
+                porcentagem = 100 * obstrucao / P1y[i];
+                piorObstrucao = x;
+                alert(porcentagem)
+                alert(P1y[i])
+            }
         }
     }
     else
@@ -53,10 +72,35 @@ function createDataSet (torre1, torre2, frequencia, distancia){
 
             P2x[i] = x
             P2y[i] = y
+
+            if(y < topografia[parseInt(x)]){
+                obstruido = true;
+                if(topografia[parseInt(x)] - y > obstrucao) obstrucao = topografia[parseInt(x)];
+                porcentagem = 100* obstrucao / (parseFloat(550) * Math.sqrt((d1 * d2)/(distancia * frequencia)) + parseFloat(altura));
+                piorObstrucao = x;
+
+               
+            }
         }
 }
 
-pontos = [P1x,P1y,P2x,P2y]
+
+for(let i = 1; i < 100; i++){
+    x = (distancia / 100) * i;
+    y = topografia[parseInt(x)];
+    P3x[i] = x
+    P3y[i] = y
+}
+
+if(obstruido){
+    
+    var P4x = piorObstrucao
+    var P4y = topografia[parseInt(piorObstrucao)]
+
+    
+}
+
+pontos = [P1x,P1y,P2x,P2y,P3x,P3y,P4x,porcentagem]
 
 return pontos
 }
@@ -96,16 +140,19 @@ function updateTextInput2(val) {
 document.getElementById('valueTorre2').innerText = val + 'm'
 }  
 
-function printResultados(potenciaRecebida, zonaFresnel, potenciaIrradiada){
+function printResultados(potenciaRecebida, zonaFresnel, potenciaIrradiada, porcentagemObstaculo){
 
     
     document.getElementById("potenciaRecebida").innerHTML = "Potencia Recebida [dBm]:" +'\n'+ potenciaRecebida
     document.getElementById("zonaFresnel").innerText = "Raio Zona de Fresnel [m]:"  +'\n'+ zonaFresnel
     document.getElementById("potenciaIrradiada").innerText = "Potencia Irradiada [dBm]:"  +'\n'+ potenciaIrradiada
+    document.getElementById("porcentagemObstaculo").innerText = "Porcentagem Obstaculo :"  +'\n'+ porcentagemObstaculo
 }
+
 
 function gerarGrafico(){
 
+    const topografia= [1700, 1300, 700, 790, 770, 760, 750, 800, 850, 800, 700, 650, 625, 600,600, 600, 650, 700, 800, 850, 800, 100, 0, 0]
 
     torre1 = document.getElementById("customRange1").value
     torre2 = document.getElementById("customRange2").value
@@ -117,7 +164,8 @@ function gerarGrafico(){
     distanciaRadioEnlace = document.getElementById("distanciaRadioEnlace").value
     frequenciaOperacao = document.getElementById("frequenciaOperacao").value
     
-    
+    torre1 = (parseInt(torre1) + parseInt(topografia[0]));
+    torre2 = (parseInt(torre2) + parseInt(topografia[parseInt(distanciaRadioEnlace)]));
 
     var pEirp = calculaPotenciaEfetivamenteIrradiadaPeirp(
         potenciaTransmissor,ganhoAntenaTX,atenuacaoConector,torre1, atenuacaoCabo)
@@ -125,12 +173,14 @@ function gerarGrafico(){
     var raio = calculaRaio(distanciaRadioEnlace, frequenciaOperacao)
     var potenciaRecebida = calculaPotenciaRecebidaPr (pEirp, aE, atenuacaoConector, torre2, atenuacaoCabo, ganhoAntenaRX)
     
-    printResultados(potenciaRecebida, raio, pEirp);
+    
     
                 
     pontos = createDataSet(torre1, torre2, frequenciaOperacao, distanciaRadioEnlace);
 
-        
+    var porcentagemObstaculo = pontos[7]
+
+    printResultados(potenciaRecebida, raio, pEirp, porcentagemObstaculo);    
 //Plota Gráfico
     var ctx = document.getElementsByClassName("line-chart")
             let chart = []
@@ -139,11 +189,14 @@ function gerarGrafico(){
 
                 type: 'line',
                 data: {
-                    datasets: [{
+                    datasets: [
+                        
+                    
+                    {
                         label: 'Fresnel de Cima',
                         data: pontos[1],
                         borderWidth: 5,
-                        borderColor: 'black',
+                        borderColor: 'blue',
                         backgroundColor: 'transparent'
                     },
                     {
@@ -152,6 +205,22 @@ function gerarGrafico(){
                         borderWidth: 5,
                         borderColor: 'blue',
                         backgroundColor: 'transparent'
+                    },
+                    {
+                        label: 'Relevo',
+                        data: pontos[5],
+                        borderWidth: 5,
+                        borderColor: 'Brown',
+                        backgroundColor: 'transparent'
+                    },
+                    {
+                        label: 'Ponto Obstrução',
+                        data: pontos[6],
+                        borderWidth: 5,
+                        borderColor: 'red',
+                        backgroundColor: 'transparent',
+                        pointHitRadius: 8,
+                        pointBorderWidth: 2
                     }],
 
                     labels: pontos[0],
